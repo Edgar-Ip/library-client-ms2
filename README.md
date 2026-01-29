@@ -1,46 +1,47 @@
-# Library Access – Microservicio 1
+# Library Client – Microservicio 2
 
 ## Descripción
-Microservicio encargado de gestionar el control de acceso a una biblioteca.
-Permite registrar el ingreso y salida de usuarios, controlar el aforo máximo
-y consultar los usuarios actualmente dentro de la biblioteca.
+Microservicio consumidor encargado de consultar los usuarios activos
+del Microservicio 1 (Library Access), aplicando mecanismos de resiliencia
+ante latencia o fallos del servicio principal.
 
 ⚠️ **Nota importante**  
 Este microservicio fue desarrollado inicialmente en **Java 8** y posteriormente
-**migrado a Java 21 (LTS)** como mejora adicional, manteniendo el comportamiento
-funcional sin regresiones.
+**migrado a Java 21 (LTS)** como mejora adicional.
 
 ---
 
 ## Responsabilidades
-- Registrar ingreso de usuarios
-- Registrar salida de usuarios
-- Controlar aforo máximo (10 personas)
-- Validar código de usuario
-- Simular latencia bajo demanda
+- Consumir el endpoint de consulta del MS1
+- Implementar timeout y circuit breaker
+- Gestionar fallback ante fallos
 
 ---
 
-## Reglas de Negocio
-- El código de usuario debe ser:
-  - Alfanumérico
-  - Exactamente 8 caracteres
-- No se permite el ingreso de usuarios duplicados
-- Si el aforo máximo es alcanzado, se deniega el acceso
-- Si se envía el header `MyFlag=true`, la consulta tarda 8 segundos
+## Resiliencia
+- Comunicación vía Feign Client
+- Timeout máximo: **5 segundos**
+- Circuit Breaker con fallback
+- Manejo diferenciado de errores:
+  - MS1 lento
+  - MS1 no disponible
 
 ---
 
-## Base de Datos
-- H2 (en memoria)
+## Dependencia Externa
+Este microservicio depende del siguiente servicio en ejecución:
+
+- **Library Access (MS1)**  
+  URL por defecto: `http://localhost:8081`
 
 ---
 
 ## Tecnologías Utilizadas
 - Java 21 (LTS)
 - Spring Boot 3.2.x
-- Spring Data JPA
-- H2 Database
+- Spring Cloud 2023.x
+- OpenFeign
+- Resilience4j
 - Maven
 - Git
 
@@ -49,25 +50,30 @@ funcional sin regresiones.
 ## Requisitos
 - JDK 21
 - Maven 3.8+
+- MS1 en ejecución
 
 ---
+
+## Ejecución del Proyecto
+
+`bash
+mvn clean spring-boot:run
 
 ## Ejecución del Proyecto
 
 bash
 mvn clean spring-boot:run
 
-Puerto: 8081
+Puerto: 8082
 
 --- 
 
 ### Endpoints
 
-| Método | Endpoint                    | Descripción          |
-| ------ | --------------------------- | -------------------- |
-| POST   | `/library/entry/{userCode}` | Ingreso de usuario   |
-| POST   | `/library/exit/{userCode}`  | Salida de usuario    |
-| GET    | `/library/users`            | Consulta de usuarios |
+| Método | Endpoint                | Descripción                  |
+| ------ | ----------------------- | ---------------------------- |
+| GET    | `/client/library/users` | Consulta de usuarios vía MS1 |
+
 
 ---
 
@@ -76,23 +82,38 @@ MyFlag=true
 
 ---
 
-#### Manejo de Errores
+#### Manejo de Errores (Formato Genérico)
 
 Formato json
 
 {
-  "code": 401,
+  "code": 400,
   "type": "Error",
   "timestamp": 1763045191,
   "details": "Mensaje descriptivo"
 }
 
+
 ---
 
 
-## Pruebas Unitarias
-El microservicio cuenta con pruebas unitarias desarrolladas con JUnit 5 y Mockito,
-enfocadas en la validación de reglas de negocio y manejo de excepciones.
+## Casos Prueba.
+
+#### MS1 con latencia
+
+- Header MyFlag=true
+
+- MS1 tarda 8 segundos
+
+- MS2 corta a los 5 segundos
+
+Mensaje:
+
+"El MS 1 tardo mas de lo esperado"
+
+#### MS1 fuera de línea
+
+"El MS 1 no se encuentra disponible"
 
 
 ---

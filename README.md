@@ -120,6 +120,7 @@ Cuando el Microservicio 1 tarda más de 5 segundos en responder, el Microservici
   "details": "El MS 1 tardo mas de lo esperado"
 }
 
+Este error es capturado y transformado en una respuesta controlada (400) hacia el cliente final, con el objetivo de no exponer errores internos de infraestructura.
 
 
 ---

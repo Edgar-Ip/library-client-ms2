@@ -108,6 +108,19 @@ Formato json
 
 
 
+### Error 500 (Timeout interno)
+
+Cuando el Microservicio 1 tarda más de 5 segundos en responder, el Microservicio 2 aborta la llamada y genera internamente un error 500 con el siguiente formato genérico:
+
+```json
+{
+  "code": 500,
+  "type": "Error",
+  "timestamp": 1763045191,
+  "details": "El MS 1 tardo mas de lo esperado"
+}
+
+
 
 ---
 

@@ -112,7 +112,7 @@ Formato json
 
 Cuando el Microservicio 1 tarda más de 5 segundos en responder, el Microservicio 2 aborta la llamada y genera internamente un error 500 con el siguiente formato genérico:
 
-```json
+`json
 {
   "code": 500,
   "type": "Error",

@@ -84,14 +84,29 @@ MyFlag=true
 
 #### Manejo de Errores (Formato Genérico)
 
+
 Formato json
+
+#### MS1 tarda más de 5 segundos (TIMEOUT)
 
 {
   "code": 400,
   "type": "Error",
   "timestamp": 1763045191,
-  "details": "Mensaje descriptivo"
+  "details": "El MS 1 tardo mas de lo esperado"
 }
+
+
+#### MS1 fuera de línea (apagado)
+
+{
+  "code": 400,
+  "type": "Error",
+  "timestamp": 1763045191,
+  "details": "El MS 1 no se encuentra disponible"
+}
+
+
 
 
 ---
